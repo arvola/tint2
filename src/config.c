@@ -1010,6 +1010,8 @@ void add_entry(char *key, char *value)
         hide_inactive_tasks = atoi(value);
     } else if (strcmp(key, "taskbar_hide_different_monitor") == 0) {
         hide_task_diff_monitor = atoi(value);
+    } else if (strcmp(key, "taskbar_hide_from_monitor") == 0) {
+        hide_task_from_monitor = config_get_monitor(value);
     } else if (strcmp(key, "taskbar_hide_different_desktop") == 0) {
         hide_task_diff_desktop = atoi(value);
     } else if (strcmp(key, "taskbar_hide_if_empty") == 0) {

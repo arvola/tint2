@@ -61,6 +61,7 @@ extern gboolean hide_inactive_tasks;
 extern gboolean hide_task_diff_monitor;
 extern gboolean hide_taskbar_if_empty;
 extern gboolean always_show_all_desktop_tasks;
+extern int hide_task_from_monitor;
 extern TaskbarSortMethod taskbar_sort_method;
 extern Alignment taskbar_alignment;
 

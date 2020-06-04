@@ -352,14 +352,15 @@ void handle_event_configure_notify(XEvent *e)
     }
 
     // 'win' move in another monitor
-    if (num_panels > 1 || hide_task_diff_monitor) {
+    if (num_panels > 1 || hide_task_diff_monitor || hide_task_from_monitor > -2) {
         Task *task = get_task(win);
         if (task) {
             Panel *p = task->area.panel;
             int monitor = get_window_monitor(win);
             if ((hide_task_diff_monitor && p->monitor != monitor && task->area.on_screen) ||
                 (hide_task_diff_monitor && p->monitor == monitor && !task->area.on_screen) ||
-                (p->monitor != monitor && num_panels > 1)) {
+                (p->monitor != monitor && num_panels > 1) ||
+                hide_task_from_monitor == monitor) {
                 remove_task(task);
                 task = add_task(win);
                 if (win == get_active_window()) {

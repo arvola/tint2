@@ -744,6 +744,7 @@ void set_task_state(Task *task, TaskState state)
                 if (state == TASK_ACTIVE && g_slist_find(urgent_list, task1))
                     del_urgent(task1);
                 gboolean hide = FALSE;
+                int window_monitor = get_window_monitor(task->win);
                 Taskbar *taskbar = (Taskbar *)task1->area.parent;
                 if (task->desktop == ALL_DESKTOPS && server.desktop != taskbar->desktop) {
                     // Hide ALL_DESKTOPS task on non-current desktop
@@ -759,8 +760,8 @@ void set_task_state(Task *task, TaskState state)
                     if (taskbar->desktop != server.desktop)
                         hide = TRUE;
                 }
-                if (get_window_monitor(task->win) != ((Panel *)task->area.panel)->monitor &&
-                    (hide_task_diff_monitor || num_panels > 1)) {
+                if (window_monitor != ((Panel *)task->area.panel)->monitor &&
+                    (hide_task_diff_monitor || num_panels > 1 || window_monitor == hide_task_from_monitor)) {
                     hide = TRUE;
                 }
                 if ((!hide) != task1->area.on_screen) {
