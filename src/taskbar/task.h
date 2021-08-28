@@ -113,4 +113,11 @@ Task *prev_task(Task *task);
 void add_urgent(Task *task);
 void del_urgent(Task *task);
 
+// Check if a window's movement should be tested for hiding tasks
+gboolean check_win_position();
+
+// Determine if a task's window belongs to the given monitor panel based on its
+// position and location.
+gboolean win_for_panel(Task *task, int panel_monitor);
+
 #endif

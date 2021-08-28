@@ -731,7 +731,7 @@ void set_task_state(Task *task, TaskState state)
         }
     }
 
-    if (task->current_state != state || hide_task_diff_monitor || hide_task_diff_desktop) {
+    if (task->current_state != state || check_win_position()) {
         GPtrArray *task_buttons = get_task_buttons(task->win);
         if (task_buttons) {
             for (int i = 0; i < task_buttons->len; ++i) {
@@ -744,24 +744,10 @@ void set_task_state(Task *task, TaskState state)
                 if (state == TASK_ACTIVE && g_slist_find(urgent_list, task1))
                     del_urgent(task1);
                 gboolean hide = FALSE;
-                int window_monitor = get_window_monitor(task->win);
-                Taskbar *taskbar = (Taskbar *)task1->area.parent;
-                if (task->desktop == ALL_DESKTOPS && server.desktop != taskbar->desktop) {
-                    // Hide ALL_DESKTOPS task on non-current desktop
-                    hide = !always_show_all_desktop_tasks;
-                }
-                if (hide_inactive_tasks) {
+                if (hide_inactive_tasks && state != TASK_ACTIVE) {
                     // Show only the active task
-                    if (state != TASK_ACTIVE) {
-                        hide = TRUE;
-                    }
-                }
-                if (hide_task_diff_desktop) {
-                    if (taskbar->desktop != server.desktop)
-                        hide = TRUE;
-                }
-                if (window_monitor != ((Panel *)task->area.panel)->monitor &&
-                    (hide_task_diff_monitor || num_panels > 1 || window_monitor == hide_task_from_monitor)) {
+                    hide = TRUE;
+                } else if (!win_for_panel(task1, ((Panel *)task->area.panel)->monitor)) {
                     hide = TRUE;
                 }
                 if ((!hide) != task1->area.on_screen) {
@@ -896,4 +882,40 @@ void task_update_desktop(Task *task)
     task = add_task(win);
     reset_active_task();
     schedule_panel_redraw();
+}
+
+gboolean check_win_position() {
+    // Make sure to update this if you add more conditions to win_for_panel below
+    return hide_task_diff_monitor || num_panels > 1 || hide_task_from_monitor > -1;
+}
+
+gboolean win_for_panel(Task *task, int panel_monitor) {
+    // First check if the task should be shown on the current desktop
+    Taskbar *taskbar = (Taskbar *)task->area.parent;
+    if (taskbar->desktop != server.desktop) {
+        if (hide_task_diff_desktop) {
+            return FALSE;
+        }
+
+        if (task->desktop == ALL_DESKTOPS && !always_show_all_desktop_tasks) {
+            // Hide ALL_DESKTOPS task on non-current desktop
+            return FALSE;
+        }
+    }
+
+    Window win = task->win;
+    int window_monitor = get_window_monitor(win);
+
+    if (window_monitor == hide_task_from_monitor)
+        return FALSE;
+
+    if (window_monitor != panel_monitor) {
+        if (hide_task_diff_monitor)
+            return FALSE;
+
+        if (num_panels > 1)
+            return FALSE;
+    }
+
+    return TRUE;
 }

@@ -87,7 +87,7 @@ void default_taskbar()
     hide_task_diff_desktop = FALSE;
     hide_inactive_tasks = FALSE;
     hide_task_diff_monitor = FALSE;
-    hide_task_from_monitor = -2;
+    hide_task_from_monitor = -1;
     hide_taskbar_if_empty = FALSE;
     always_show_all_desktop_tasks = FALSE;
     taskbar_thumbnail_jobs_done = NULL;
